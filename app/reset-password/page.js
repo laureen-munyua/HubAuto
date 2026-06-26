@@ -3,13 +3,15 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import {useSearchParams} from "next/navigation"
+import { useSearchParams } from "next/navigation";
 
 export default function ResetPassword() {
-
   const router = useRouter();
- const useSearchParams=useSearchParams()
- const email=useSearchParams.get("email")
+
+  const searchParams = useSearchParams();
+
+  const email = searchParams.get("email");
+
   // Store passwords
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -49,9 +51,10 @@ export default function ResetPassword() {
 
     // Convert response
     const data = await res.json();
+    localStorage.setItem("user", JSON.stringify(data.user))
+
 
     console.log(data);
-    localstorage.setitem("user",JSON.stringify(data.user))
 
     // Stop loading
     setLoading(false);
@@ -61,26 +64,19 @@ export default function ResetPassword() {
     setConfirmPassword("");
 
     // Redirect to login
-    window.location.href="/"
+window.location.href = "/"
   };
 
   return (
     <div className="flex justify-center items-center min-h-screen">
-
       <div className="w-full max-w-xl p-10 border rounded-lg shadow-sm">
-
         <h1 className="text-3xl font-bold text-green-700 text-center">
           Reset Password
         </h1>
 
-        <form
-          onSubmit={handleSubmit}
-          className="mt-6 flex flex-col gap-4"
-        >
-
+        <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
           {/* New Password */}
           <div className="relative">
-
             <input
               type={showPassword ? "text" : "password"}
               placeholder="New Password"
@@ -97,7 +93,6 @@ export default function ResetPassword() {
             >
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </button>
-
           </div>
 
           {/* Confirm Password */}
@@ -111,13 +106,9 @@ export default function ResetPassword() {
 
           {/* Button */}
           <button className="bg-green-600 text-white py-3 rounded-md">
-
             {loading ? "Updating..." : "Reset Password"}
-
           </button>
-
         </form>
-
       </div>
     </div>
   );

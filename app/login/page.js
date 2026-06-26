@@ -4,68 +4,81 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
+
 export default function Login() {
+
   const router = useRouter();
 
+  // Store form values
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  // NEW: password visibility toggle
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(""); // NEW: show errors to user
 
+
+  // Loading state
+  const [loading, setLoading] = useState(false);
+
+  // Runs when form is submitted
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Start loading
     setLoading(true);
-    setError(""); // clear previous errors
 
-    try {
-      const res = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+    // Data to send
+    const formData = {
+      email,
+      password,
+    };
 
-      const data = await res.json();
+    // Send login request
+    const res = await fetch("/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
 
-      if (!res.ok) {
-        // API returned an error (400, 401, 500, etc.)
-        setError(data.message || "Login failed. Please try again.");
-        return; // stop here, don't redirect
-      }
+    // Response from backend
+    const data = await res.json();
 
-      // Save logged in user
-      localStorage.setItem("user", JSON.stringify(data.user));
+    console.log(data);
 
-      // Clear form
-      setEmail("");
-      setPassword("");
+    // Save logged in user
+    localStorage.setItem(
+      "user",
+      JSON.stringify(data.user)
+    );
+    
+localStorage.setItem("user", JSON.stringify(data.user))
 
-      // Redirect to homepage
-      router.push("/");
+    // Stop loading
+    setLoading(false);
 
-    } catch (err) {
-      // Network error or API crashed
-      setError("Something went wrong. Please check your connection.");
-    } finally {
-      setLoading(false); // ALWAYS stop loading, success or fail
-    }
-  };
+    // Clear form
+    setEmail("");
+    setPassword("");
+
+    // Redirect to homepage
+window.location.href = "/"  };
 
   return (
     <div className="flex justify-center items-center min-h-screen">
+
       <div className="w-full max-w-xl p-10 border rounded-lg shadow-sm">
 
         <h1 className="text-3xl font-bold text-green-700 text-center">
           Login
         </h1>
 
-        {/* Show error message */}
-        {error && (
-          <p className="text-red-500 text-sm text-center mt-3">{error}</p>
-        )}
+        <form
+          onSubmit={handleSubmit}
+          className="mt-6 flex flex-col gap-4"
+        >
 
-        <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
-
+          {/* Email */}
           <input
             type="email"
             placeholder="Email Address"
@@ -73,8 +86,9 @@ export default function Login() {
             onChange={(e) => setEmail(e.target.value)}
             className="border p-3 rounded-md placeholder-gray-500 text-gray-800"
           />
-
+  {/* PASSWORD FIELD WITH EYE ICON */}
           <div className="relative">
+
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
@@ -82,6 +96,8 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
               className="border p-3 rounded-md w-full pr-10 placeholder-gray-500"
             />
+
+            {/* Toggle button */}
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
@@ -89,27 +105,33 @@ export default function Login() {
             >
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </button>
-          </div>
 
-          <div className="flex justify-end">
-            <a href="/forgot-password" className="text-sm text-green-600 hover:underline">
-              Forgot Password?
-            </a>
           </div>
+          {/* Forgot password link */}
+<div className="flex justify-end">
+  <a
+    href="/forgot-password"
+    className="text-sm text-green-600 hover:underline"
+  >
+    Forgot Password?
+  </a>
+</div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="bg-green-600 text-white py-3 rounded-md disabled:opacity-60"
-          >
+          {/* Button */}
+          <button className="bg-green-600 text-white py-3 rounded-md">
+
+            {/* Change button text while loading */}
             {loading ? "Logging in..." : "Login"}
+
           </button>
 
         </form>
 
         <p className="text-center text-gray-600 mt-4">
-          Don't have an account?
-          <a href="/signup" className="text-green-600 ml-1">Signup</a>
+          Don’t have an account?
+          <a href="/signup" className="text-green-600 ml-1">
+            Signup
+          </a>
         </p>
 
       </div>

@@ -5,66 +5,66 @@ import { useRouter } from "next/navigation";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function Signup() {
+
   const router = useRouter();
 
+  // Form states
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(""); // NEW: error state
 
+  // NEW: password visibility toggle
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Loading state
+  const [loading, setLoading] = useState(false);
+
+  // Handle submit
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     setLoading(true);
-    setError(""); // clear previous errors
 
-    try {
-      const res = await fetch("/api/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
-      });
+    const res = await fetch("/api/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name,
+        email,
+        password,
+      }),
+    });
 
-      const data = await res.json();
+    const data = await res.json();
 
-      if (!res.ok) {
-        // API returned an error (400, 409 email already exists, 500, etc.)
-        setError(data.message || "Signup failed. Please try again.");
-        return; // stop here, don't redirect
-      }
+    console.log(data);
 
-      // Clear form
-      setName("");
-      setEmail("");
-      setPassword("");
+    setLoading(false);
 
-      // Redirect to login
-      router.push("/login");
+    setName("");
+    setEmail("");
+    setPassword("");
 
-    } catch (err) {
-      // Network error or API crashed
-      setError("Something went wrong. Please check your connection.");
-    } finally {
-      setLoading(false); // ALWAYS runs, success or fail
-    }
+    router.push("/login");
   };
 
   return (
     <div className="flex justify-center items-center min-h-screen">
+
       <div className="w-full max-w-xl p-10 border rounded-lg shadow-sm">
 
         <h1 className="text-3xl font-bold text-green-700 text-center">
           Create Account
         </h1>
 
-        {/* Show error message */}
-        {error && (
-          <p className="text-red-500 text-sm text-center mt-3">{error}</p>
-        )}
+        <form
+          onSubmit={handleSubmit}
+          className="mt-6 flex flex-col gap-4"
+        >
 
-        <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
-
+          {/* Full Name */}
           <input
             type="text"
             placeholder="Full Name"
@@ -73,6 +73,7 @@ export default function Signup() {
             className="border p-3 rounded-md placeholder-gray-500"
           />
 
+          {/* Email */}
           <input
             type="email"
             placeholder="Email Address"
@@ -81,7 +82,13 @@ export default function Signup() {
             className="border p-3 rounded-md placeholder-gray-500"
           />
 
+          {/* PASSWORD FIELD WITH EYE ICON 
+          relative means the element stays in its natural spot in the layout, 
+          but acts as a reference point
+           for any children inside it that are positioned "absolutely.
+          */}
           <div className="relative">
+
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
@@ -89,6 +96,10 @@ export default function Signup() {
               onChange={(e) => setPassword(e.target.value)}
               className="border p-3 rounded-md w-full pr-10 placeholder-gray-500"
             />
+
+            {/* Toggle button 
+            ternary operator- condition ? if value true: if value false
+            */}
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
@@ -96,13 +107,11 @@ export default function Signup() {
             >
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </button>
+
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="bg-green-600 text-white py-3 rounded-md disabled:opacity-60"
-          >
+          {/* Signup button */}
+          <button className="bg-green-600 text-white py-3 rounded-md">
             {loading ? "Creating account..." : "Signup"}
           </button>
 
@@ -110,7 +119,9 @@ export default function Signup() {
 
         <p className="text-center text-gray-600 mt-4">
           Already have an account?
-          <a href="/login" className="text-green-600 ml-1">Login</a>
+          <a href="/login" className="text-green-600 ml-1">
+            Login
+          </a>
         </p>
 
       </div>
