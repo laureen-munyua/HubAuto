@@ -25,9 +25,10 @@ useEffect(() => {
   const getInitial = (email) => {
     return email ? email.charAt(0).toUpperCase() : "?";
   };
-  const handlelogout=()=>{
+    // ADD THIS FUNCTION
+  const handleLogout = () => {
     localStorage.removeItem("user")
-    window.location.href="/"
+    window.location.href = "/"
   }
 
   return (
@@ -62,8 +63,13 @@ useEffect(() => {
             <div className="w-10 h-10 rounded-full bg-green-600 text-white flex items-center justify-center font-bold">
               {getInitial(user.email)}
             </div>
-            <button on onClick={handlelogout}className="text-red-600 font-medium">Log out</button>
-
+ {/* ADD THIS BUTTON */}
+            <button
+              onClick={handleLogout}
+              className="text-red-600 font-medium hover:text-red-800"
+            >
+              Logout
+            </button>
           </Fragment>
         ) : (
           <Fragment>

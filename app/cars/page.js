@@ -6,17 +6,18 @@ export default function CarsPage() {
   const [loading, setLoading] = useState(true);
 
   // Runs once when the page loads
-  useEffect(() => {
-
-    // Fetch all cars from the API
-    fetch("/api/cars")
-      .then((res) => res.json())  // Convert response to JSON
-      .then((data) => {
-        setCars(data);            // Save cars to state
-        setLoading(false);        // Hide loading indicator
-      });
-
-  }, []);
+useEffect(() => {
+  fetch("/api/cars")
+    .then((res) => res.json())
+    .then((data) => {
+      setCars(data.cars ?? []); // if undefined, use empty array
+      setLoading(false);
+    })
+    .catch(() => {
+      setCars([]); // if fetch fails, still show empty page not crash
+      setLoading(false);
+    });
+}, []);
 
   if (loading) {
     return (
